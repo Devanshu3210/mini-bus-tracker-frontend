@@ -5,10 +5,15 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
 // ✅ Connect to your Render backend securely
+
 const socket = io("https://mini-bus-tracker-backend.onrender.com", {
   transports: ["websocket"],
   withCredentials: true,
+  secure: true,
+  reconnection: true,
+  rejectUnauthorized: false,
 });
+
 
 // ✅ Fix marker icon path issue for Leaflet
 delete L.Icon.Default.prototype._getIconUrl;

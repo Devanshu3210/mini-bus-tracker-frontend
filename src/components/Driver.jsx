@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import { io } from "socket.io-client";
 
 // ✅ Connect to deployed Render backend
+
+
 const socket = io("https://mini-bus-tracker-backend.onrender.com", {
-  transports: ["websocket"],
+  transports: ["websocket"], // Only websocket
   withCredentials: true,
+  secure: true,
+  reconnection: true,
+  rejectUnauthorized: false,
 });
 
 export default function Driver() {
