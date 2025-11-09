@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000"); // Change this to your Render backend URL after deployment
+// ✅ Connect to deployed Render backend
+const socket = io("https://mini-bus-tracker-backend.onrender.com", {
+  transports: ["websocket"],
+  withCredentials: true,
+});
 
 export default function Driver() {
   const [busId, setBusId] = useState("");
@@ -19,7 +23,15 @@ export default function Driver() {
       (pos) => {
         const { latitude, longitude } = pos.coords;
         setCoords({ lat: latitude, lng: longitude });
+
+        // ✅ Emit location updates to backend
         socket.emit("location-update", {
+          busId,
+          lat: latitude,
+          lng: longitude,
+        });
+
+        console.log("📍 Sent location:", {
           busId,
           lat: latitude,
           lng: longitude,
@@ -28,18 +40,20 @@ export default function Driver() {
       (err) => alert("Error fetching location: " + err.message),
       { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
     );
+
     setWatchId(id);
   };
 
   const stopSharing = () => {
     if (watchId) navigator.geolocation.clearWatch(watchId);
     setSharing(false);
+    console.log("🛑 Stopped sharing for bus:", busId);
   };
 
   return (
     <div className="page-container">
       <div className="card">
-        <h2>Driver Panel</h2>
+        <h2>🚍 Driver Panel</h2>
         <div className="input-group">
           <label>Bus ID</label>
           <input
